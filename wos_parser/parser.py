@@ -56,6 +56,7 @@ def extract_authors(elem):
         dais_id = name.attrib.get('dais_id', '')
         seq_no = name.attrib.get('seq_no', '')
         role = name.attrib.get('role', '')
+        addr_no = name.attrib.get('addr_no', '')
         if name.find('full_name') is not None:
             full_name = name.find('full_name').text
         else:
@@ -70,6 +71,7 @@ def extract_authors(elem):
             last_name = ''
         author = {'dais_id': dais_id,
                   'seq_no': seq_no,
+                  'addr_no': addr_no,
                   'role': role,
                   'full_name': full_name,
                   'first_name': first_name,
@@ -91,3 +93,32 @@ def extract_keywords(elem):
     else:
         keywords_plus_text = ''
     return keywords_text, keywords_plus_text
+
+def extract_addresses(elem):
+    """Give element tree of WoS, return list of addresses"""
+    address_dict_all = list()
+    wos_id = extract_wos_id(elem)
+    addresses = elem.findall('./static_data/fullrecord_metadata/addresses/address_name')
+    for address in addresses:
+        address_dict = dict()
+        address_spec = address.find('address_spec')
+        addr_no = address_spec.attrib.get('addr_no', '')
+        for tag in ['city', 'state', 'country', 'zip', 'full_address']:
+            if address_spec.find(tag) is not None:
+                address_dict[tag] = address_spec.find(tag).text
+            else:
+                address_dict[tag] = ''
+        if address_spec.find('organizations') is not None:
+            organizations = '; '.join([oraginization.text for oraginization in address_spec.find('organizations')])
+        else:
+            organizations = ''
+        if address_spec.find('suborganizations') is not None:
+            suborganizations = '; '.join([s.text for s in address_spec.find('suborganizations')])
+        else:
+            suborganizations = ''
+        address_dict.update({'wos_id': wos_id,
+                             'addr_no': addr_no,
+                             'organizations': organizations,
+                             'suborganizations': suborganizations})
+        address_dict_all.append(address_dict)
+    return address_dict_all

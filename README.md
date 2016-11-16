@@ -16,7 +16,18 @@ authors = [wp.extract_authors(record) for record in records] # you can flatten a
 ## Parser Available
 
 - `extract_authors`
+- `extract_addresses`
 - `extract_keywords`
+
+## Installation
+
+Clone the repository and install using `setup.py`
+
+```bash
+$ git clone https://github.com/titipata/wos_parser
+$ cd wos_parser
+$ python setup.py install
+```
 
 ## License
 
