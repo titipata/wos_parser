@@ -145,3 +145,62 @@ def extract_publisher(elem):
         publisher_dict.update({'wos_id': wos_id})
         publisher_list.append(publisher_dict)
     return publisher_list
+
+def extract_pub_info(elem):
+    """Extract publication information from WoS"""
+
+    pub_info_dict = dict()
+    pub_info_dict.update({'wos_id': extract_wos_id(elem)})
+
+    pub_info = elem.find('.static_data/summary/pub_info').attrib
+    for key in ['sortdate', 'has_abstract', 'pubtype', 'pubyear', 'pubmonth', 'issue']:
+        if key in pub_info.keys():
+            pub_info_dict.update({key: pub_info[key]})
+        else:
+            pub_info_dict.update({key: ''})
+
+    for title in elem.findall('./static_data/summary/titles/title'):
+        if title.attrib['type'] in ['source', 'item']:
+            # more attribute includes source_abbrev, abbrev_iso, abbrev_11, abbrev_29
+            title_dict = {title.attrib['type']: title.text}
+            pub_info_dict.update(title_dict)
+
+    language = elem.find('./static_data/fullrecord_metadata/languages/language')
+    if language.tag is not None:
+        pub_info_dict.update({'language': language.text})
+    else:
+        pub_info_dict.update({'language': ''})
+
+    heading_tag = elem.find('./static_data/fullrecord_metadata/category_info/headings/heading')
+    if heading_tag is not None:
+        heading = heading_tag.text
+    else:
+        heading = ''
+    pub_info_dict.update({'heading': heading})
+
+    subheading_tag = elem.find('./static_data/fullrecord_metadata/category_info/subheadings/subheading')
+    if subheading_tag is not None:
+        subheading = subheading_tag.text
+    else:
+        subheading = ''
+    pub_info_dict.update({'subheading': subheading})
+
+    doctype_tag = elem.find('./static_data/summary/doctypes/doctype')
+    if doctype_tag is not None:
+        doctype = doctype_tag.text
+    else:
+        doctype = ''
+    pub_info_dict.update({doctype_tag.tag: doctype})
+
+    abstract_tag = elem.findall('./static_data/fullrecord_metadata/abstracts/abstract/abstract_text/p')
+    if len(abstract_tag) > 0:
+        abstract = ' '.join([p.text for p in abstract_tag])
+    else:
+        abstract = ''
+    pub_info_dict.update({'abstract': abstract})
+
+    keywords, keywords_plus = extract_keywords(elem)
+    pub_info_dict.update({'keywords': keywords,
+                          'keywords_plus': keywords_plus})
+
+    return pub_info_dict

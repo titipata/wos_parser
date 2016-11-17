@@ -3,7 +3,8 @@
 Python XML parser for Web of Science XML file. See example XML file from
 [yadudoc/wos_builder](https://github.com/yadudoc/wos_builder/blob/master/sample.xml).
 The implementation is based on [yadudoc/wos_builder](https://github.com/yadudoc/wos_builder).
-I just try to make is as function.
+I just make is as a function that can be easily integrate with others platform like
+Spark or multiprocessing.
 
 ## Example
 
@@ -15,9 +16,13 @@ authors = [wp.extract_authors(record) for record in records] # you can flatten a
 
 ## Parser Available
 
+Using `read_xml` in order to read Web of Science XML file to list of element trees.
+Each element tree can be parsed to these following function to get dictionary or
+list of dictionary output.
+
+- `extract_pub_info`
 - `extract_authors`
 - `extract_addresses`
-- `extract_keywords`
 - `extract_publisher`
 
 ## Installation
