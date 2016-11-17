@@ -279,3 +279,21 @@ def extract_conferences(elem):
     if not conferences_list:
         conferences_list = None
     return conferences_list
+
+def extract_references(elem):
+    """Extract references from given WoS element tree"""
+    wos_id = extract_wos_id(elem)
+    references = elem.findall('./static_data/fullrecord_metadata/references/reference')
+    ref_list = list()
+    for reference in references:
+        ref_dict = dict()
+        for tag in ['uid', 'citedAuthor', 'year', 'page',
+                    'volume', 'citedTitle', 'citedWork', 'doi']:
+            ref_tag = reference.find(tag)
+            if ref_tag is not None:
+                ref_dict[tag] = ref_tag.text
+            else:
+                ref_dict[tag] = ''
+        ref_dict.update({'wos_id': wos_id})
+        ref_list.append(ref_dict)
+    return ref_list
