@@ -204,3 +204,68 @@ def extract_pub_info(elem):
                           'keywords_plus': keywords_plus})
 
     return pub_info_dict
+
+def extract_funding(elem):
+    """Extract funding text and funding agency separated by semicolon from WoS
+    if see no funding, it will return just Web of Science id and empty string
+    """
+    wos_id = extract_wos_id(elem)
+    grants = elem.findall('./static_data/fullrecord_metadata/fund_ack/grants/grant')
+    fund_text_tag = elem.find('./static_data/fullrecord_metadata/fund_ack/fund_text')
+    if fund_text_tag is not None:
+        fund_text = ' '.join([p_.text for p_ in fund_text_tag.findall('p')])
+    else:
+        fund_text = ''
+
+    grant_list = list()
+    for grant in grants:
+        if grant.find('grant_agency') is not None:
+            grant_list.append(grant.find('grant_agency').text)
+
+    return {'wos_id': wos_id,
+            'funding_text': fund_text,
+            'funding_agency': '; '.join(grant_list)}
+
+def extract_conferences(elem):
+    """Extract list of conferences from given WoS element tree
+    if no conferences exist, return None"""
+    conferences_list = list()
+    conferences = elem.findall('./static_data/summary/conferences/conference')
+    for conference in conferences:
+        conference_dict = dict()
+        conf_title_tag = conference.find('conf_titles/conf_title')
+        if conf_title_tag is not None:
+            conf_title = conf_title_tag.text
+        else:
+            conf_title = ''
+
+        conf_date_tag = conference.find('conf_dates/conf_date')
+        if conf_date_tag is not None:
+            conf_date = conf_date_tag.text
+        else:
+            conf_date = ''
+        for key in ['conf_start', 'conf_end']:
+            if key in conf_date_tag.attrib.keys():
+                conference_dict.update({key: conf_date_tag.attrib[key]})
+            else:
+                conference_dict.update({key: ''})
+
+        conf_city_tag = conference.find('conf_locations/conf_location/conf_city')
+        conf_city = conf_city_tag.text if conf_city_tag is not None else ''
+
+        conf_state_tag = conference.find('conf_locations/conf_location/conf_state')
+        conf_state = conf_state_tag.text if conf_state_tag is not None else ''
+
+        conf_sponsor_tag = conference.find('sponsors/sponsor')
+        conf_sponsor = conf_sponsor_tag.text if conf_sponsor_tag is not None else ''
+
+        conference_dict.update({'conf_title': conf_title,
+                                'conf_date': conf_date,
+                                'conf_city': conf_city,
+                                'conf_state': conf_state,
+                                'conf_sponsor': conf_sponsor})
+
+        conferences_list.append(conference_dict)
+    if not conferences_list:
+        conferences_list = None
+    return conferences_list

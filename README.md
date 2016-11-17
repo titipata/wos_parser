@@ -24,6 +24,8 @@ list of dictionary output.
 - `extract_authors`
 - `extract_addresses`
 - `extract_publisher`
+- `extract_funding`
+- `extract_conferences`
 
 ## Installation
 
