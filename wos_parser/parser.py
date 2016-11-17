@@ -230,7 +230,9 @@ def extract_conferences(elem):
     """Extract list of conferences from given WoS element tree
     if no conferences exist, return None"""
     conferences_list = list()
+    wos_id = extract_wos_id(elem)
     conferences = elem.findall('./static_data/summary/conferences/conference')
+
     for conference in conferences:
         conference_dict = dict()
         conf_title_tag = conference.find('conf_titles/conf_title')
@@ -256,14 +258,22 @@ def extract_conferences(elem):
         conf_state_tag = conference.find('conf_locations/conf_location/conf_state')
         conf_state = conf_state_tag.text if conf_state_tag is not None else ''
 
-        conf_sponsor_tag = conference.find('sponsors/sponsor')
-        conf_sponsor = conf_sponsor_tag.text if conf_sponsor_tag is not None else ''
+        conf_sponsor_tag = conference.findall('sponsors/sponsor')
+        if len(conf_sponsor_tag) > 0:
+            conf_sponsor = '; '.join([s.text for s in conf_sponsor_tag])
+        else:
+            conf_sponsor = ''
 
-        conference_dict.update({'conf_title': conf_title,
+        conf_host_tag = conference.find('./conf_locations/conf_location/conf_host')
+        conf_host = conf_host_tag.text if conf_host_tag is not None else ''
+
+        conference_dict.update({'wos_id': wos_id,
+                                'conf_title': conf_title,
                                 'conf_date': conf_date,
                                 'conf_city': conf_city,
                                 'conf_state': conf_state,
-                                'conf_sponsor': conf_sponsor})
+                                'conf_sponsor': conf_sponsor,
+                                'conf_host': conf_host})
 
         conferences_list.append(conference_dict)
     if not conferences_list:
