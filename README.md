@@ -18,6 +18,7 @@ authors = [wp.extract_authors(record) for record in records] # you can flatten a
 - `extract_authors`
 - `extract_addresses`
 - `extract_keywords`
+- `extract_publisher`
 
 ## Installation
 

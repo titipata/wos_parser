@@ -122,3 +122,26 @@ def extract_addresses(elem):
                              'suborganizations': suborganizations})
         address_dict_all.append(address_dict)
     return address_dict_all
+
+def extract_publisher(elem):
+    """Extract publisher details"""
+    wos_id = extract_wos_id(elem)
+    publisher_list = list()
+    publishers = elem.findall('./static_data/summary/publishers/publisher')
+    for publisher in publishers:
+        publisher_dict = dict()
+        name = publisher.find('names/name')
+        for tag in ['display_name', 'full_name']:
+            if name.find(tag) is not None:
+                publisher_dict[tag] = name.find(tag).text
+            else:
+                publisher_dict[tag] = ''
+        addr = publisher.find('address_spec')
+        for tag in ['full_address', 'city']:
+            if addr.find(tag) is not None:
+                publisher_dict[tag] = addr.find(tag).text
+            else:
+                publisher_dict[tag] = ''
+        publisher_dict.update({'wos_id': wos_id})
+        publisher_list.append(publisher_dict)
+    return publisher_list
