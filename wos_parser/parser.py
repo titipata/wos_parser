@@ -21,7 +21,7 @@ def read_xml(path_to_xml, verbose=True, n_records=None):
     ==========
     path_to_xml: str, full path to WoS XML file
     verbose: (optional) boolean, True if we want to print number of records parsed
-    n_records: (optional) int>1, read specified number of records only
+    n_records: (optional) int > 1, read specified number of records only
     """
     records = list()
     count = 0
@@ -36,10 +36,10 @@ def read_xml(path_to_xml, verbose=True, n_records=None):
                 pass
             if verbose:
                 if count % 5000 == 0: print('read total %i records' % count)
-            if not record:
+            if record is None:
                 break
-            if n_records:
-                if count>=n_records:
+            if n_records is not None:
+                if count >= n_records:
                     break
     return records
 
