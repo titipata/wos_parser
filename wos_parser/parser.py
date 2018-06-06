@@ -13,14 +13,15 @@ def get_record(filehandle):
             return record
     return None
 
-def read_xml(path_to_xml, verbose=True):
+def read_xml(path_to_xml, verbose=True, n_records=None):
     """
     Read XML file and return full list of records in element tree
 
     Parameters
     ==========
     path_to_xml: str, full path to WoS XML file
-    verbose: boolean, True if we want to print number of records parsed
+    verbose: (optional) boolean, True if we want to print number of records parsed
+    n_records: (optional) int>1, read specified number of records only
     """
     records = list()
     count = 0
@@ -37,6 +38,9 @@ def read_xml(path_to_xml, verbose=True):
                 if count % 5000 == 0: print('read total %i records' % count)
             if not record:
                 break
+            if n_records:
+                if count>=n_records:
+                    break
     return records
 
 def extract_wos_id(elem):
