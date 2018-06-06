@@ -13,15 +13,15 @@ def get_record(filehandle):
             return record
     return None
 
-def read_xml(path_to_xml, nrecords, verbose=True):
+def read_xml(path_to_xml, verbose=True, nrecords=0):
     """
     Read XML file and return full list of records in element tree
 
     Parameters
     ==========
     path_to_xml: str, full path to WoS XML file
-    verbose: boolean, True if we want to print number of records parsed
-    nrecords: int, read specified number of records only
+    verbose: (optional) boolean, True if we want to print number of records parsed
+    nrecords: (optional) int>1, read specified number of records only
     """
     records = list()
     count = 0
