@@ -1,10 +1,10 @@
 from lxml import etree
 
 # For compatibility with Py2.7
-    try:
-        from io import StringIO
-    except ImportError:
-        from StringIO import StringIO
+try:
+    from io import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 def get_record(filehandle):
     """Iteratively go through file and get text of each WoS record"""
