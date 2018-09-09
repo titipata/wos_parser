@@ -352,7 +352,7 @@ def extract_identifiers(elem):
 
     Returns
     ==========
-    dict {identifier type: value}, e.g. identifier types may be DOI, ISSN, etc.
+    dict {identifier type: value} or empty dict if none found. Identifier types may be DOI, ISSN, etc.
     """
     idents = elem.findall('./dynamic_data/cluster_related/identifiers')
     id_dict = {}
