@@ -27,6 +27,7 @@ list of dictionary output.
 - `extract_funding`
 - `extract_conferences`
 - `extract_references`
+- `extract_identifiers`
 
 ## Installation
 
