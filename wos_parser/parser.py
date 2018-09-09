@@ -1,5 +1,11 @@
 from lxml import etree
 
+# For compatibility with Py2.7
+    try:
+        from io import StringIO
+    except ImportError:
+        from StringIO import StringIO
+
 def get_record(filehandle):
     """Iteratively go through file and get text of each WoS record"""
     record = ''
@@ -13,6 +19,25 @@ def get_record(filehandle):
             return record
     return None
 
+def parse_record(file, records, count, verbose, n_records):
+    record = get_record(file)
+    count += 1
+    try:
+        rec = etree.fromstring(record)
+        records.append(rec)
+    except:
+        pass
+
+    if verbose:
+        if count % 5000 == 0: print('read total %i records' % count)
+    if record is None:
+        return False
+    if n_records is not None:
+        if count >= n_records:
+            return False
+
+    return True
+
 def read_xml(path_to_xml, verbose=True, n_records=None):
     """
     Read XML file and return full list of records in element tree
@@ -23,24 +48,35 @@ def read_xml(path_to_xml, verbose=True, n_records=None):
     verbose: (optional) boolean, True if we want to print number of records parsed
     n_records: (optional) int > 1, read specified number of records only
     """
-    records = list()
+    records = []
     count = 0
     with open(path_to_xml, 'r') as file:
-        while True:
-            record = get_record(file)
-            count += 1
-            try:
-                rec = etree.fromstring(record)
-                records.append(rec)
-            except:
-                pass
-            if verbose:
-                if count % 5000 == 0: print('read total %i records' % count)
-            if record is None:
-                break
-            if n_records is not None:
-                if count >= n_records:
-                    break
+        keep_parsing = True
+        while keep_parsing:
+            keep_parsing = parse_record(file, records, count, verbose, n_records)
+    return records
+    
+def read_xml_string(xml_string, verbose=True, n_records=None):
+    """
+    Parse XML string and return list of records in element tree.
+
+    See Also
+    ==========
+    * `read_xml`
+    * `get_record`
+
+    Parameters
+    ==========
+    * xml_string: str, XML string
+    * verbose: (optional) boolean, True if we want to print number of records parsed
+    * n_records: (optional) int > 1, read specified number of records only
+    """
+    records = []
+    count = 0
+    with StringIO(xml_string) as file:
+        keep_parsing = True
+        while keep_parsing:
+            keep_parsing = parse_record(file, records, count, verbose, n_records)
     return records
 
 def extract_wos_id(elem):
@@ -207,6 +243,11 @@ def extract_pub_info(elem):
     pub_info_dict.update({'keywords': keywords,
                           'keywords_plus': keywords_plus})
 
+    identifiers = extract_identifiers(elem)
+    for k, v in identifiers.items():
+        pub_info_dict.update({k: v})
+    # End for
+
     return pub_info_dict
 
 def extract_funding(elem):
@@ -301,3 +342,23 @@ def extract_references(elem):
         ref_dict.update({'wos_id': wos_id})
         ref_list.append(ref_dict)
     return ref_list
+
+def extract_identifiers(elem):
+    """Extract document identifiers from WoS element tree
+
+    Parameters
+    ==========
+    elem: etree.Element object, WoS element
+
+    Returns
+    ==========
+    dict {identifier type: value}, e.g. identifier types may be DOI, ISSN, etc.
+    """
+    idents = elem.findall('./dynamic_data/cluster_related/identifiers')
+    id_dict = {}
+    for ident in idents:
+        for child in ident.getchildren():
+            id_dict.update({child.get('type'): child.get('value')})
+    # End for
+
+    return id_dict
