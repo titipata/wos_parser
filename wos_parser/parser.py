@@ -243,6 +243,11 @@ def extract_pub_info(elem):
     pub_info_dict.update({'keywords': keywords,
                           'keywords_plus': keywords_plus})
 
+    identifiers = extract_identifiers(elem)
+    for k, v in identifiers.items():
+        pub_info_dict.update({k: v})
+    # End for
+
     return pub_info_dict
 
 def extract_funding(elem):
@@ -337,3 +342,23 @@ def extract_references(elem):
         ref_dict.update({'wos_id': wos_id})
         ref_list.append(ref_dict)
     return ref_list
+
+def extract_identifiers(elem):
+    """Extract document identifiers from WoS element tree
+
+    Parameters
+    ==========
+    elem: etree.Element object, WoS element
+
+    Returns
+    ==========
+    dict {identifier type: value}, e.g. identifier types may be DOI, ISSN, etc.
+    """
+    idents = elem.findall('./dynamic_data/cluster_related/identifiers')
+    id_dict = {}
+    for ident in idents:
+        for child in ident.getchildren():
+            id_dict.update({child.get('type'): child.get('value')})
+    # End for
+
+    return id_dict
