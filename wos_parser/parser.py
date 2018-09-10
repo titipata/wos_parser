@@ -19,24 +19,27 @@ def get_record(filehandle):
             return record
     return None
 
-def parse_record(file, records, count, verbose, n_records):
-    record = get_record(file)
-    count += 1
-    try:
-        rec = etree.fromstring(record)
-        records.append(rec)
-    except:
-        pass
+def parse_records(file, verbose, n_records):
+    records = []
+    count = 0
+    while True:
+        record = get_record(file)
+        count += 1
+        try:
+            rec = etree.fromstring(record)
+            records.append(rec)
+        except:
+            pass
 
-    if verbose:
-        if count % 5000 == 0: print('read total %i records' % count)
-    if record is None:
-        return False
-    if n_records is not None:
-        if count >= n_records:
-            return False
+        if verbose:
+            if count % 5000 == 0: print('read total %i records' % count)
+        if record is None:
+            break
+        if n_records is not None:
+            if count >= n_records:
+                break
 
-    return True
+    return records
 
 def read_xml(path_to_xml, verbose=True, n_records=None):
     """
@@ -48,14 +51,11 @@ def read_xml(path_to_xml, verbose=True, n_records=None):
     verbose: (optional) boolean, True if we want to print number of records parsed
     n_records: (optional) int > 1, read specified number of records only
     """
-    records = []
-    count = 0
     with open(path_to_xml, 'r') as file:
-        keep_parsing = True
-        while keep_parsing:
-            keep_parsing = parse_record(file, records, count, verbose, n_records)
+        records = parse_records(file, verbose, n_records)
+
     return records
-    
+
 def read_xml_string(xml_string, verbose=True, n_records=None):
     """
     Parse XML string and return list of records in element tree.
@@ -71,12 +71,9 @@ def read_xml_string(xml_string, verbose=True, n_records=None):
     * verbose: (optional) boolean, True if we want to print number of records parsed
     * n_records: (optional) int > 1, read specified number of records only
     """
-    records = []
-    count = 0
     with StringIO(xml_string) as file:
-        keep_parsing = True
-        while keep_parsing:
-            keep_parsing = parse_record(file, records, count, verbose, n_records)
+        records = parse_records(file, verbose, n_records)
+
     return records
 
 def extract_wos_id(elem):
