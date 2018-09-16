@@ -20,7 +20,7 @@ def test_convert_pubinfo_ris():
         WoS identifer string not found!
         Expected: {}
         Got: {}
-        """.format(ris_string[0:36], expected)
+        """.format(ris_string[0:37], expected)
 
 def test_expected_md5():
     """
