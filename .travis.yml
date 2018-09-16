@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.6"
+install:
+  - python setup.py install
+  - pip install requests
+
+before_script: cd wos_parser/tests
+script:
+  - pytest
