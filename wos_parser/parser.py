@@ -183,9 +183,24 @@ def extract_publisher(elem):
         publisher_list.append(publisher_dict)
     return publisher_list
 
-def extract_pub_info(elem):
-    """Extract publication information from WoS"""
 
+def extract_pub_info(elem):
+    """
+    Extract publication information from WoS
+
+    See Also
+    ==========
+    * `read_xml`
+    * `get_record`
+
+    Parameters
+    ==========
+    * elem: object, XML etree element object
+
+    Returns
+    ==========
+    * dict, of publication information
+    """
     pub_info_dict = dict()
     pub_info_dict.update({'wos_id': extract_wos_id(elem)})
 
