@@ -124,7 +124,7 @@ def write_file(text, filename, ext='.txt', overwrite=False):
     """Write string to text file."""
     fn = '{}{}'.format(filename, ext)
     if not os.path.isfile(fn) or overwrite:
-        with open(fn, 'w') as outfile:
+        with open(fn, 'w', encoding='utf-8') as outfile:
             outfile.write(text)
             outfile.flush()
     # End if
