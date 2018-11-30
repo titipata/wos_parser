@@ -22,7 +22,7 @@ def test_convert_pubinfo_ris():
         Got: {}
         """.format(ris_string[0:37], expected)
 
-def test_expected_md5():
+def test_expected_records():
     """
     Test converted RIS text string by comparing against
     an expected hash value.
@@ -45,13 +45,10 @@ def test_expected_md5():
     hashstr = tmp.hexdigest()
     ```
     """
-    # Expected md5 hash
-    matching_md5 = 'd7d3bda08dea1f846d2ed6932977bc2a'
+    # Expected number of records
+    num_recs = 164
 
     ris_entries = wos_parser.rec_info_to_ris(records)
     ris_string = wos_parser.to_ris_text(ris_entries)
 
-    tmp = hashlib.md5(ris_string.encode())
-    hashstr = tmp.hexdigest()
-
-    assert hashstr == matching_md5, "md5 hash of RIS string did not match!"
+    assert ris_string.count('ER') == num_recs, "Incorrect number of records found!"
