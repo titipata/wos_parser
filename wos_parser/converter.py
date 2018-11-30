@@ -51,6 +51,7 @@ def rec_info_to_ris(records):
         # End for
 
         ris_info = {}
+        ris_info['TY'] = pubinfo['pubtype']
         ris_info['AU'] = authors
         ris_info['AF'] = author_fullnames
         ris_info['TI'] = pubinfo['item']
