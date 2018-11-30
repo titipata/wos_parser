@@ -51,6 +51,7 @@ def rec_info_to_ris(records):
         # End for
 
         ris_info = {}
+        ris_info['TY'] = pubinfo['pubtype']
         ris_info['AU'] = authors
         ris_info['AF'] = author_fullnames
         ris_info['TI'] = pubinfo['item']
@@ -124,7 +125,7 @@ def write_file(text, filename, ext='.txt', overwrite=False):
     """Write string to text file."""
     fn = '{}{}'.format(filename, ext)
     if not os.path.isfile(fn) or overwrite:
-        with open(fn, 'w') as outfile:
+        with open(fn, 'w', encoding='utf-8') as outfile:
             outfile.write(text)
             outfile.flush()
     # End if
