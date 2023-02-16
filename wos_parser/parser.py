@@ -229,6 +229,19 @@ def extract_pub_info(elem):
     else:
         heading = ''
     pub_info_dict.update({'heading': heading})
+    
+    subject_tr = []
+    subject_ext = []
+
+    for subject_tag in elem.findall('./static_data/fullrecord_metadata/category_info/subjects/subject'):
+        if subject_tag is not None:
+            if subject_tag.attrib["ascatype"] == "traditional":
+                subject_tr.append(subject_tag.text)
+            if subject_tag.attrib["ascatype"] == "extended":
+                subject_ext.append(subject_tag.text)
+
+    pub_info_dict.update({'subject_traditional': subject_tr})
+    pub_info_dict.update({'subject_extended': subject_ext})
 
     subheading_tag = elem.find('./static_data/fullrecord_metadata/category_info/subheadings/subheading')
     if subheading_tag is not None:
